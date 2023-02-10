@@ -11,51 +11,27 @@ macro_rules! brainfuck {
 #[macro_export]
 macro_rules! brainfuck_with_state {
     ($state:ident, +) => {
-        //"+"
-        {
-            $state.plus();
-            "++*a;"
-        }
+        $state.plus();
     };
 
     ($state:ident, -) => {
-        //"-"
-        {
-            $state.minus();
-            "--*a;"
-        }
+        $state.minus();
     };
 
     ($state:ident, .) => {
-        //"."
-        {
-            $state.print();
-            "putchar(*a); "
-        }
+        $state.print();
     };
 
     ($state:ident, ,) => {
-        //","
-        {
-            $state.input();
-            "*a = getchar();"
-        }
+        $state.input();
     };
 
     ($state:ident, <) => {
-        //"<"
-        {
-            $state.left();
-            "--a;"
-        }
+        $state.left();
     };
 
     ($state:ident, >) => {
-        //">"
-        {
-            $state.right();
-            "++a;"
-        }
+        $state.right();
     };
 
     // << and >> need to be handled
@@ -63,54 +39,31 @@ macro_rules! brainfuck_with_state {
     // doesn't treat them as two < or >,
     // but rather as a single shift left/right token 
     ($state:ident, <<) => {
-        //"< <"
-        {
-            $state.left();
-            $state.left();
-            "--a;--a;"
-        }
+        $state.left();
+        $state.left();
     };
 
     ($state:ident, >>) => {
-        //"> >"
-        {
-            $state.right();
-            $state.right();
-            "++a;++a;"
-        }
+        $state.right();
+        $state.right();
     };
 
     // This one also needs to be taken care of separately
     // because the tokenizer detects an arrow '->'
     ($state:ident, ->) => {
-        // "- >"
-        {
-            $state.minus();
-            $state.right();
-            "--*a;++a;"
-        }
+        $state.minus();
+        $state.right();
     };
 
     ($state:ident, [$($loop_body:tt) *]) => {
-        {
-            //format!("[{}]", wrapper!($loop_body))
-            
-            let mut formatted = "while (*a != 0) {".to_owned();
-
-            while (*$state.get_mut() != 0) {
-                $(formatted.push_str(brainfuck_with_state!($state, $loop_body));)*
-            }
-
-            formatted.push('}');
-            formatted
+        while (*$state.get_mut() != 0) {
+            $(brainfuck_with_state!($state, $loop_body);)*
         }
     };
 
     ($state:ident, $($code:tt) *) => {
         {
-            let mut formatted = String::new();
-            $(formatted += format!("{}", brainfuck_with_state!($state, $code)).as_str();)*
-            formatted
+            $(brainfuck_with_state!($state, $code);)*
         }
     };
 }
