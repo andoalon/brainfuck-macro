@@ -1,5 +1,7 @@
 mod brainfuck;
 
 fn main() {
-    brainfuck!(+++++ +++++[- >+++ +++<] > +++++ . + .);
+    brainfuck!(+++++ +++++[- >+++ +++<] >
+        //>><< <+-> // Actually does nothing but exercises the <<, >> and -> detection
+    +++++ . + .);
 }

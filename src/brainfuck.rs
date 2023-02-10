@@ -19,54 +19,27 @@ macro_rules! brainfuck_with_state {
 
 #[macro_export]
 macro_rules! brainfuck_operation {
-    ($state:ident, +) => {
-        $state.plus();
-    };
-
-    ($state:ident, -) => {
-        $state.minus();
-    };
-
-    ($state:ident, .) => {
-        $state.print();
-    };
-
-    ($state:ident, ,) => {
-        $state.input();
-    };
-
-    ($state:ident, <) => {
-        $state.left();
-    };
-
-    ($state:ident, >) => {
-        $state.right();
-    };
+    ($state:ident, +) => { $state.plus() };
+    ($state:ident, -) => { $state.minus() };
+    ($state:ident, .) => { $state.print() };
+    ($state:ident, ,) => { $state.input() };
+    ($state:ident, <) => { $state.left() };
+    ($state:ident, >) => { $state.right() };
 
     // << and >> need to be handled
     // separately because the tokenizer
     // doesn't treat them as two < or >,
     // but rather as a single shift left/right token 
-    ($state:ident, <<) => {
-        $state.left();
-        $state.left();
-    };
-
-    ($state:ident, >>) => {
-        $state.right();
-        $state.right();
-    };
+    ($state:ident, <<) => { brainfuck_operation!($state, <); brainfuck_operation!($state, <) };
+    ($state:ident, >>) => { brainfuck_operation!($state, >); brainfuck_operation!($state, >) };
 
     // This one also needs to be taken care of separately
     // because the tokenizer detects an arrow '->'
-    ($state:ident, ->) => {
-        $state.minus();
-        $state.right();
-    };
+    ($state:ident, ->) => { brainfuck_operation!($state, -); brainfuck_operation!($state, >) };
 
     ($state:ident, [$($loop_body:tt) *]) => {
         while (*$state.get_mut() != 0) {
-            $(brainfuck_with_state!($state, $loop_body);)*
+            $(brainfuck_operation!($state, $loop_body);)*
         }
     };
 }
