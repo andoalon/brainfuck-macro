@@ -10,6 +10,15 @@ macro_rules! brainfuck {
 
 #[macro_export]
 macro_rules! brainfuck_with_state {
+    ($state:ident, $($code:tt) *) => {
+        {
+            $(brainfuck_operation!($state, $code);)*
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! brainfuck_operation {
     ($state:ident, +) => {
         $state.plus();
     };
@@ -58,12 +67,6 @@ macro_rules! brainfuck_with_state {
     ($state:ident, [$($loop_body:tt) *]) => {
         while (*$state.get_mut() != 0) {
             $(brainfuck_with_state!($state, $loop_body);)*
-        }
-    };
-
-    ($state:ident, $($code:tt) *) => {
-        {
-            $(brainfuck_with_state!($state, $code);)*
         }
     };
 }
