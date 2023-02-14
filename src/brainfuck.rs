@@ -2,7 +2,7 @@
 macro_rules! brainfuck {
     ($($code:tt) *) => {
         {
-            let mut state = brainfuck::BrainfuckState::default();
+            let mut state = $crate::brainfuck::BrainfuckState::default();
             brainfuck_with_state!(state, $($code)*)
         }
     };    
